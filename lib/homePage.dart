@@ -9,7 +9,6 @@ import 'asset/themecolor.dart';
 
 const Color appColor = Colors.redAccent; // Define the color you want to use
 
-
 class home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

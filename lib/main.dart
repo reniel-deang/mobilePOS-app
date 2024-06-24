@@ -1,14 +1,14 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mobilepos_beta/asset/themecolor.dart';
 
 import 'homePage.dart';
+import 'bluetoothPrint.dart';
 
 void main() {
-  runApp(const MyApp()
-  );
+  runApp(MaterialApp(
+    home: bluetoothPrint(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
