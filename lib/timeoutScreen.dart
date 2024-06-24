@@ -4,9 +4,6 @@ import 'package:intl/intl.dart';
 
 import 'homePage.dart';
 
-void main() {
-  runApp(Timeout());
-}
 
 class Timeout extends StatefulWidget {
   const Timeout({Key? key}) : super(key: key);
@@ -22,27 +19,35 @@ class _TimeoutscreenState extends State<Timeout> {
   void _enterPlateNumber() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Enter Plate Number'),
-        content: TextField(
-          onChanged: (value) {
-            setState(() {
-              _plateNumber = value;
-            });
-          },
-          decoration: const InputDecoration(
-            hintText: 'Enter plate number',
-          ),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Search Plate Number', style: TextStyle(fontSize: 20,),),
+          content: TextField(
+            onChanged: (value) {
+          setState(() {
+            _plateNumber = value;
+          });
+        },
+        decoration: const InputDecoration(
+        hintText: 'Enter plate number',
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close dialog
-            },
-            child: const Text('Search'),
-          ),
-        ],
-      ),
+        ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+
+              },
+              child: Text('SEARCH', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -66,11 +71,11 @@ class _TimeoutscreenState extends State<Timeout> {
         appBar: AppBar(
           title: const Text(
             'Parking Time-out',
-            style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+            style: TextStyle(color: appColor, fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
           leading: IconButton(
-            icon: const Icon(FontAwesomeIcons.arrowLeft, color: Colors.amber,),
+            icon: const Icon(FontAwesomeIcons.arrowLeft, color: appColor,),
             onPressed: () {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => home()));
@@ -78,7 +83,7 @@ class _TimeoutscreenState extends State<Timeout> {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.search, size: 30, color: Colors.amber),
+              icon: const Icon(Icons.search, size: 30, color: appColor),
               onPressed: _enterPlateNumber,
             ),
           ],
@@ -90,7 +95,7 @@ class _TimeoutscreenState extends State<Timeout> {
               ElevatedButton(
                 onPressed: _printReceipt,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber, // Use backgroundColor instead of primary
+                  backgroundColor: appColor, // Use backgroundColor instead of primary
                   padding: const  EdgeInsets.symmetric(horizontal: 40, vertical: 25),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

@@ -2,9 +2,7 @@ import 'homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-void main() {
-  runApp(Timein());
-}
+
 
 class Timein extends StatelessWidget {
   @override
@@ -66,13 +64,13 @@ class _TimeInScreenState extends State<TimeInScreen> {
       appBar: AppBar(
         title: const Text(
           'Parking Time-In',
-          style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
+          style: TextStyle(color: appColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Colors.amber,
+            color: appColor,
           ),
           onPressed: () {
             Navigator.pushReplacement(context,
@@ -103,7 +101,7 @@ class _TimeInScreenState extends State<TimeInScreen> {
             ElevatedButton(
               onPressed: _printReceipt,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber, // Use backgroundColor instead of primary
+                backgroundColor: appColor, // Use backgroundColor instead of primary
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -148,7 +146,7 @@ class EnterPlateNumberDialog extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(
-              color: Colors.amber, // Border color when focused
+              color: appColor, // Border color when focused
               width: 2.0, // Border width
             ),
           ),

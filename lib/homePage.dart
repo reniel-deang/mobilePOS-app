@@ -5,10 +5,10 @@ import 'package:intl/intl.dart';
 import 'main.dart';
 import 'timeinScreen.dart';
 import 'timeoutScreen.dart';
+import 'asset/themecolor.dart';
 
-void main() {
-  runApp(home());
-}
+const Color appColor = Colors.redAccent; // Define the color you want to use
+
 
 class home extends StatelessWidget {
   @override
@@ -16,10 +16,10 @@ class home extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.yellow,
+        primaryColor: appColor,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.yellow, // Use backgroundColor instead of primary
+            backgroundColor: appColor,
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -56,20 +56,17 @@ class _MainPageState extends State<MainPage> {
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
-                color: Colors.yellow),
+                color: appColor),
           ),
           bottom: const TabBar(
-            indicatorColor: Colors.amber,
+            indicatorColor: appColor,
             tabs: [
               Tab(
-                  icon: Icon(FontAwesomeIcons.car, color: Colors.amber,)),
+                  icon: Icon(FontAwesomeIcons.car, color: appColor)),
               Tab(
-                  icon:
-                  Icon(FontAwesomeIcons.toilet, color: Colors.amber,)),
+                  icon: Icon(FontAwesomeIcons.toilet, color: appColor)),
             ],
-
           ),
-
         ),
         body: TabBarView(
           children: [
@@ -79,7 +76,6 @@ class _MainPageState extends State<MainPage> {
         ),
         drawer: MainDrawer(),
       ),
-
     );
   }
 }
@@ -100,8 +96,8 @@ class HomeScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           'Parking Ticket', style: TextStyle(
-            color: Colors.amber,
-          fontWeight: FontWeight.bold
+            color: appColor,
+            fontWeight: FontWeight.bold
         ),
         ),
       ),
@@ -110,11 +106,11 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: (){
+              onPressed: () {
                 Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Timein()), (route) => false);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber, // Use backgroundColor instead of primary
+                backgroundColor: appColor, // Use backgroundColor instead of primary
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -123,23 +119,21 @@ class HomeScreen extends StatelessWidget {
               child: const Text('TIME IN',
                   style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
             ),
-
             SizedBox(width: 20), // Add some space between buttons
             ElevatedButton(
-              onPressed: (){
+              onPressed: () {
                 Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Timeout()), (route) => false);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber, // Use backgroundColor instead of primary
+                backgroundColor: appColor, // Use backgroundColor instead of primary
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const  Text('TIME OUT',
+              child: const Text('TIME OUT',
                   style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
             ),
-
           ],
         ),
       ),
@@ -169,24 +163,22 @@ class ToiletScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Toilet Receipt', style: TextStyle(color: Colors.amber,
+          'Toilet Receipt', style: TextStyle(color: appColor,
             fontWeight: FontWeight.bold
         ),
-
         ),
-
       ),
       body: Center(
         child: ElevatedButton(
           onPressed: () => _printReceipt(context),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.amber,
+            backgroundColor: appColor,
             padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const  Text('PRINT RECEIPT',
+          child: const Text('ISSUE RECEIPT',
               style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
         ),
       ),
@@ -211,7 +203,7 @@ class MainDrawer extends StatelessWidget {
               gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Colors.amber, Colors.amber]
+                  colors: [appColor, appColor]
               ),
             ),
             child: Column(
@@ -237,7 +229,7 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(
               FontAwesomeIcons.house,
-              color: Colors.amber,
+              color: appColor,
               size: 20,
             ),
             title: const Text("Home"),
@@ -249,22 +241,45 @@ class MainDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(
               FontAwesomeIcons.gear,
-              color: Colors.amber,
+              color: appColor,
               size: 20,
             ),
             title: const Text("Settings"),
-            onTap: () => _navigateTo(context, ToiletScreen()), // Assuming a SettingsScreen exists
+            onTap: () => _navigateTo(context, themepicker()), // Assuming a SettingsScreen exists
           ),
           ListTile(
             leading: const Icon(
               FontAwesomeIcons.signOut,
-              color: Colors.amber,
+              color: appColor,
               size: 20,
             ),
             title: const Text("Logout"),
             onTap: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => MyApp()));
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Please Wait...'),
+                    content: Text('Do you really want to Logout?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) => MyApp()));
+                        },
+                        child: Text('LOGOUT', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
+                      ),
+                    ],
+                  );
+                },
+              );
+
             },
           ),
         ],

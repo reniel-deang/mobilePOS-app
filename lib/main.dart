@@ -1,10 +1,14 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobilepos_beta/asset/themecolor.dart';
 
 import 'homePage.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyApp()
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -28,7 +32,13 @@ class MyApp extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(height: 150),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text("MobilePOS Portal", style: TextStyle(
+                            color: appColor, fontSize: 35, fontWeight: FontWeight.bold
+                          ),),
+                        ),
+                        SizedBox(height: 80),
                         Card(
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           child: const Padding(
@@ -98,7 +108,7 @@ class _LoginFormState extends State<LoginForm> {
               decoration: InputDecoration(
                 labelText: 'Username',
                 hintText: 'Enter username',
-                prefixIcon: const Icon(FontAwesomeIcons.user, color: Colors.amber, size: 20,),
+                prefixIcon: const Icon(FontAwesomeIcons.user, color: appColor, size: 20,),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -119,7 +129,7 @@ class _LoginFormState extends State<LoginForm> {
             decoration: InputDecoration(
               labelText: 'Password',
               hintText: 'Enter Password' ,
-              prefixIcon: const Icon(FontAwesomeIcons.lock, color: Colors.amber, size: 20,),
+              prefixIcon: const Icon(FontAwesomeIcons.lock, color: appColor, size: 20,),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -146,9 +156,9 @@ class _LoginFormState extends State<LoginForm> {
                 },
                 child: const Text(
                   'Login',
-                  style: TextStyle(color: Colors.amber, fontSize: 15),
+                  style: TextStyle(color: Colors.white, fontSize: 15),
                 ),
-                color: Colors.amber[800],
+                color:appColor,
                 textColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -165,7 +175,7 @@ class _LoginFormState extends State<LoginForm> {
             child: const Text(
               'Forgot Password?',
               style: TextStyle(
-                color: Colors.amber,
+                color: appColor,
               ),
             ),
           ),
@@ -193,7 +203,7 @@ class WavePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.amber[800] ?? Colors.amber
+      ..color = appColor ?? appColor
       ..style = PaintingStyle.fill;
 
     final path = Path();
@@ -209,7 +219,7 @@ class WavePainter extends CustomPainter {
     canvas.drawPath(path, paint);
 
     final paint2 = Paint()
-      ..color = Colors.amber[800] ?? Colors.amber
+      ..color = appColor ?? appColor
       ..style = PaintingStyle.fill;
 
     final path2 = Path();
