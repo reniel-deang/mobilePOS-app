@@ -146,22 +146,35 @@ class _bluetoothPrintState extends State<bluetoothPrint> {
                         onPressed:  _connected?() async {
                           Map<String, dynamic> config = Map();
 
+
                           List<LineText> list = [];
 
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '********************************', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'Parking Ticket', weight: 1, align: LineText.ALIGN_CENTER, fontZoom: 2, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'PARKING TICKET', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1, fontZoom: 2));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'CHEKWA Corp.', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '1234 West Philippine Sea', weight: 0, align: LineText.ALIGN_CENTER,linefeed: 1));
                           list.add(LineText(linefeed: 1));
 
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '---------RECEIPT DETAIL---------', weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '物资名称规格型号', weight: 1, align: LineText.ALIGN_LEFT, x: 0,relativeX: 0, linefeed: 0));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '单位', weight: 1, align: LineText.ALIGN_LEFT, x: 350, relativeX: 0, linefeed: 0));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '数量', weight: 1, align: LineText.ALIGN_LEFT, x: 500, relativeX: 0, linefeed: 1));
-
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '混凝土C30', align: LineText.ALIGN_LEFT, x: 0,relativeX: 0, linefeed: 0));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '吨', align: LineText.ALIGN_LEFT, x: 350, relativeX: 0, linefeed: 0));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '12.0', align: LineText.ALIGN_LEFT, x: 500, relativeX: 0, linefeed: 1));
-
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '********************************', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '--------OFFICIAL RECEIPT--------', weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'TICKET NO: 139477984', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'PLATE NO: HCN879', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'DATE: JUNE 24 2024', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '--------------------------------', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'TIME IN : ', align: LineText.ALIGN_LEFT, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'TIME OUT : ', align: LineText.ALIGN_LEFT,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '------------------------------', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'PRICE : ', align: LineText.ALIGN_LEFT,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '------------------------------', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'This ticket is non-refundable', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'It is subject to the rules and', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'regulation of carpark management', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_QRCODE, content: 'HCN879', size: 60, align: LineText.ALIGN_CENTER, linefeed: 1, fontZoom: 2));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'Scan me', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
                           list.add(LineText(linefeed: 1));
 
                           await bluetoothPrint.printReceipt(config, list);
@@ -177,10 +190,14 @@ class _bluetoothPrintState extends State<bluetoothPrint> {
 
                           // x、y坐标位置，单位dpi，1mm=8dpi
                           List<LineText> list = [];
-                          list.add(LineText(type: LineText.TYPE_TEXT, x:10, y:10, content: 'A Title'));
-                          list.add(LineText(type: LineText.TYPE_TEXT, x:10, y:40, content: 'this is content'));
-                          list.add(LineText(type: LineText.TYPE_QRCODE, x:10, y:70, content: 'qrcode i\n'));
-                          list.add(LineText(type: LineText.TYPE_BARCODE, x:10, y:190, content: 'qrcode i\n'));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'A Title', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'this is conent left', weight: 0, align: LineText.ALIGN_LEFT,linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'this is conent right', align: LineText.ALIGN_RIGHT,linefeed: 1));
+                          list.add(LineText(linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_BARCODE, content: 'A12312112', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(linefeed: 1));
+                          list.add(LineText(type: LineText.TYPE_QRCODE, content: 'qrcode i', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(linefeed: 1));
 
                           List<LineText> list1 = [];
 
