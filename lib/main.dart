@@ -7,7 +7,8 @@ import 'bluetoothPrint.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: bluetoothPrint(),
+    debugShowCheckedModeBanner: false,
+    home: MyApp(),
   ));
 }
 
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
                         Align(
                           alignment: Alignment.center,
                           child: Text("MobilePOS Portal", style: TextStyle(
-                            color: appColor, fontSize: 35, fontWeight: FontWeight.bold
+                              color: appColor, fontSize: 35, fontWeight: FontWeight.bold
                           ),),
                         ),
                         SizedBox(height: 80),
@@ -79,6 +80,13 @@ class _LoginFormState extends State<LoginForm> {
       // Replace with your authentication logic
       if (email == 'parking' && password == 'toilet') {
         showSnackBar(context, 'Login Successful!');
+
+        // Navigate to home page
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => home()), // Replace HomePage() with your actual home page widget
+              (route) => false,
+        );
       } else {
         showSnackBar(context, 'Invalid email or password!');
       }
