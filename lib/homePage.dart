@@ -7,7 +7,7 @@ import 'timeinScreen.dart';
 import 'timeoutScreen.dart';
 import 'asset/themecolor.dart';
 
-const Color appColor = Colors.redAccent; // Define the color you want to use
+const Color appColor = Colors.blueAccent; // Define the color you want to use
 
 class home extends StatelessWidget {
   @override
@@ -79,13 +79,97 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
+
+
 class HomeScreen extends StatelessWidget {
-  void _timeIn() {
-    // Handle Time In button press
+  final TextEditingController plateController = TextEditingController();
+
+  void _timeIn(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Time In: ${DateFormat('yyyy-MM-dd  hh:mm a').format(DateTime.now())}' ,style: TextStyle(
+              color: appColor, fontSize: 12
+          ),),
+          content: TextField(
+            controller: plateController,
+            decoration: InputDecoration(
+              hintText: 'Enter Plate Number',
+              border: OutlineInputBorder(
+
+              ),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog without any action
+              },
+              child: Text('Cancel', style: TextStyle(color: Colors.white)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                String plateNumber = plateController.text;
+                // Handle time in action (e.g., save to database)
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Plate: $plateNumber\nTime In: ${DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now())}'),
+                    duration: Duration(seconds: 4),
+
+                  ),
+                );
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text('Print', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void _timeOut() {
-    // Handle Time Out button press
+  void _timeOut(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Time Out', style: TextStyle(
+              color: appColor, fontSize: 15
+          ),),
+          content: TextField(
+            controller: plateController,
+            decoration: InputDecoration(
+              hintText: 'Enter Plate Number',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog without any action
+              },
+              child: Text('Cancel', style: TextStyle(color: Colors.white)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                String plateNumber = plateController.text;
+                // Implement your logic to search for the plate number
+                // For demonstration purposes, showing a SnackBar with the plate number
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Searching for Plate: $plateNumber'),
+                    duration: Duration(seconds: 4),
+                  ),
+                );
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text('Search', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -94,10 +178,8 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Parking Ticket', style: TextStyle(
-            color: appColor,
-            fontWeight: FontWeight.bold
-        ),
+          'Parking Screen',
+          style: TextStyle(color: appColor),
         ),
       ),
       body: Center(
@@ -105,33 +187,27 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Timein()), (route) => false);
-              },
+              onPressed: () => _timeIn(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: appColor, // Use backgroundColor instead of primary
+                backgroundColor: appColor,
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('TIME IN',
-                  style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text('Time In', style: TextStyle(fontSize: 18, color: Colors.white)),
             ),
-            SizedBox(width: 20), // Add some space between buttons
+            SizedBox(width: 20),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Timeout()), (route) => false);
-              },
+              onPressed: () => _timeOut(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: appColor, // Use backgroundColor instead of primary
+                backgroundColor: appColor,
                 padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('TIME OUT',
-                  style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
+              child: const Text('Time Out', style: TextStyle(fontSize: 18, color: Colors.white)),
             ),
           ],
         ),
@@ -150,7 +226,7 @@ class ToiletScreen extends StatelessWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Amount: $amount\nDate: $currentDateTime'),
+        content: Text('Amount: ₱ $amount\nDate: $currentDateTime'),
         duration: Duration(seconds: 4),
       ),
     );
