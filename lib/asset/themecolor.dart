@@ -39,34 +39,44 @@ class _themepickerState extends State<themepicker> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title:  Text(
-          'Change ThemeColor',
+        title: Text(
+          'Change Theme Color',
           style: TextStyle(
-            color: appColor, // Assuming `appColor` is white, adjust as needed
+            color: appColor, // Assuming `appColor` is defined somewhere
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: ListView.builder(
+      body: GridView.builder(
+        padding: const EdgeInsets.all(10.0),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3, // Number of columns in the grid
+          crossAxisSpacing: 10.0,
+          mainAxisSpacing: 10.0,
+        ),
         itemCount: colors.length,
         itemBuilder: (BuildContext context, int index) {
-          return Padding(
-            padding: const EdgeInsets.all(7.0),
-            child: ListTile(
-              tileColor: colors[index], // Set the background color of the tile
-              title: Text(
-                'Theme Color $index',
-                style: TextStyle(
-                  color: Colors.white, // Adjust text color for visibility
-                  fontWeight: FontWeight.bold,
+          return GestureDetector(
+            onTap: () {
+              // Handle the tap event
+              print('Selected color: ${colors[index]}'); // Replace with desired action
+              setState(() {
+                newColor = colors[index];
+              });
+              // For example, you could store the selected color in a variable or pass it to another widget
+            },
+            child: Container(
+              color: colors[index],
+              child: Center(
+                child: Text(
+                  'Theme Color $index',
+                  style: TextStyle(
+                    color: Colors.white, // Adjust text color for visibility
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
-              onTap: () {
-                // Handle the tap event
-                print('Selected color: ${colors[index]}'); // Replace with desired action
-                newColor = colors[index];
-                // For example, you could store the selected color in a variable or pass it to another widget
-              },
             ),
           );
         },

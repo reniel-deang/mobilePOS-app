@@ -4,8 +4,8 @@ import 'package:bluetooth_print/bluetooth_print.dart';
 import 'package:bluetooth_print/bluetooth_print_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'homePage.dart';
-
 
 class BluetoothPrintPage extends StatefulWidget {
   @override
@@ -63,8 +63,17 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-
-          title: const Text('Print Screen ', style: TextStyle(fontSize: 22, color: appColor, )),
+          leading: IconButton(
+            icon: Icon(FontAwesomeIcons.arrowLeft, color: appColor,),
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => home()));
+            },
+          ),
+          title: const Text(
+            'Print Screen',
+            style: TextStyle(fontSize: 22, color: appColor),
+          ),
           centerTitle: true,
         ),
         body: RefreshIndicator(
@@ -141,7 +150,6 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                           SizedBox(width: 10.0),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-
                               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                               backgroundColor: appColor,
                               shape: RoundedRectangleBorder(
@@ -161,7 +169,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                         ],
                       ),
                       Divider(),
-                      SizedBox(height: 10,),
+                      SizedBox(height: 10),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: appColor,
