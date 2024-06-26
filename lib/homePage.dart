@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -61,10 +62,8 @@ class _MainPageState extends State<MainPage> {
           bottom: const TabBar(
             indicatorColor: appColor,
             tabs: [
-              Tab(
-                  icon: Icon(FontAwesomeIcons.car, color: appColor)),
-              Tab(
-                  icon: Icon(FontAwesomeIcons.toilet, color: appColor)),
+              Tab(icon: Icon(FontAwesomeIcons.car, color: appColor)),
+              Tab(icon: Icon(FontAwesomeIcons.toilet, color: appColor)),
             ],
           ),
         ),
@@ -80,8 +79,6 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-
-
 class HomeScreen extends StatelessWidget {
   final TextEditingController plateController = TextEditingController();
 
@@ -89,45 +86,7 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Time In: ${DateFormat('yyyy-MM-dd  hh:mm a').format(DateTime.now())}' ,style: TextStyle(
-              color: appColor, fontSize: 12
-          ),),
-          content: TextField(
-            controller: plateController,
-            decoration: InputDecoration(
-              hintText: 'Enter Plate Number',
-              border: OutlineInputBorder(
-
-              ),
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog without any action
-              },
-              child: Text('Cancel', style: TextStyle(color: Colors.white)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()), (route) => false);
-
-                String plateNumber = plateController.text;
-                // Handle time in action (e.g., save to database)
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Plate: $plateNumber\nTime In: ${DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now())}'),
-                    duration: Duration(seconds: 4),
-
-                  ),
-                );
-                Navigator.pop(context); // Close the dialog
-              },
-              child: Text('Print', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
+        return TimeInDialog(plateController: plateController);
       },
     );
   }
@@ -136,41 +95,7 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Time Out', style: TextStyle(
-              color: appColor, fontSize: 15
-          ),),
-          content: TextField(
-            controller: plateController,
-            decoration: InputDecoration(
-              hintText: 'Enter Plate Number',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog without any action
-              },
-              child: Text('Cancel', style: TextStyle(color: Colors.white)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                String plateNumber = plateController.text;
-                // Implement your logic to search for the plate number
-                // For demonstration purposes, showing a SnackBar with the plate number
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Searching For Plate: $plateNumber'),
-                    duration: Duration(seconds: 4),
-                  ),
-                );
-                Navigator.pop(context); // Close the dialog
-              },
-              child: Text('Search', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
+        return TimeOutDialog(plateController: plateController);
       },
     );
   }
@@ -219,6 +144,150 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+class TimeInDialog extends StatefulWidget {
+  final TextEditingController plateController;
+
+  TimeInDialog({required this.plateController});
+
+  @override
+  _TimeInDialogState createState() => _TimeInDialogState();
+}
+
+class _TimeInDialogState extends State<TimeInDialog> {
+  late Timer _timer;
+  late String _currentTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentTime = _getCurrentTime();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _currentTime = _getCurrentTime();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _getCurrentTime() {
+    return DateFormat('yyyy-MM-dd  hh:mm a').format(DateTime.now());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Time In: $_currentTime', style: TextStyle(
+          color: appColor, fontSize: 20
+      ),),
+      content: TextField(
+        controller: widget.plateController,
+        decoration: InputDecoration(
+          hintText: 'Enter Plate Number',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context); // Close the dialog without any action
+          },
+          child: Text('Cancel', style: TextStyle(color: Colors.white)),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()), (route) => false);
+
+            String plateNumber = widget.plateController.text;
+            // Handle time in action (e.g., save to database)
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Plate: $plateNumber\nTime In: ${_getCurrentTime()}'),
+                duration: Duration(seconds: 4),
+              ),
+            );
+            Navigator.pop(context); // Close the dialog
+          },
+          child: Text('Print', style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    );
+  }
+}
+
+class TimeOutDialog extends StatefulWidget {
+  final TextEditingController plateController;
+
+  TimeOutDialog({required this.plateController});
+
+  @override
+  _TimeOutDialogState createState() => _TimeOutDialogState();
+}
+
+class _TimeOutDialogState extends State<TimeOutDialog> {
+  late Timer _timer;
+  late String _currentTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentTime = _getCurrentTime();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _currentTime = _getCurrentTime();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _getCurrentTime() {
+    return DateFormat('yyyy-MM-dd  hh:mm a').format(DateTime.now());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Time Out: $_currentTime', style: TextStyle(
+          color: appColor, fontSize: 19
+      ),),
+      content: TextField(
+        controller: widget.plateController,
+        decoration: InputDecoration(
+          hintText: 'Enter Plate Number',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context); // Close the dialog without any action
+          },
+          child: Text('Cancel', style: TextStyle(color: Colors.white)),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            String plateNumber = widget.plateController.text;
+            // Implement your logic to search for the plate number
+            setState(() {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()));
+            });
+          },
+          child: Text('Search', style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    );
+  }
+}
+
 class ToiletScreen extends StatelessWidget {
   // Define the fixed amount
   final double fixedAmount = 10.00;
@@ -241,9 +310,8 @@ class ToiletScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Toilet Receipt', style: TextStyle(color: appColor,
-
-        ),
+          'Toilet Receipt',
+          style: TextStyle(color: appColor),
         ),
       ),
       body: Center(
@@ -256,8 +324,10 @@ class ToiletScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: const Text('ISSUE RECEIPT',
-              style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold)),
+          child: const Text(
+            'ISSUE RECEIPT',
+            style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
@@ -281,8 +351,7 @@ class MainDrawer extends StatelessWidget {
               gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [appColor, appColor]
-              ),
+                  colors: [appColor, appColor]),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -342,22 +411,21 @@ class MainDrawer extends StatelessWidget {
                     actions: <Widget>[
                       TextButton(
                         onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
+                      ),
+                      TextButton(
+                        onPressed: () {
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: (context) => MyApp()));
                         },
                         child: Text('LOGOUT', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
-                      ),
                     ],
                   );
                 },
               );
-
             },
           ),
         ],
