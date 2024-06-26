@@ -1,51 +1,46 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:bluetooth_print/bluetooth_print.dart';
 import 'package:bluetooth_print/bluetooth_print_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'homePage.dart';
 
-
-class bluetoothPrint extends StatefulWidget {
+class BluetoothPrintPage extends StatefulWidget {
   @override
-  _bluetoothPrintState createState() => _bluetoothPrintState();
+  _BluetoothPrintPageState createState() => _BluetoothPrintPageState();
 }
 
-class _bluetoothPrintState extends State<bluetoothPrint> {
+class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
   BluetoothPrint bluetoothPrint = BluetoothPrint.instance;
-
   bool _connected = false;
   BluetoothDevice? _device;
-  String tips = 'no device connect';
+  String tips = 'No Device Connected';
 
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) => initBluetooth());
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initBluetooth() async {
     bluetoothPrint.startScan(timeout: Duration(seconds: 4));
-
-    bool isConnected=await bluetoothPrint.isConnected??false;
+    bool isConnected = await bluetoothPrint.isConnected ?? false;
 
     bluetoothPrint.state.listen((state) {
-      print('******************* cur device status: $state');
-
+      print('Device status: $state');
       switch (state) {
         case BluetoothPrint.CONNECTED:
           setState(() {
             _connected = true;
-            tips = 'connect success';
+            tips = 'Connected successfully';
           });
           break;
         case BluetoothPrint.DISCONNECTED:
           setState(() {
             _connected = false;
-            tips = 'disconnect success';
+            tips = 'Disconnected successfully';
           });
           break;
         default:
@@ -55,9 +50,9 @@ class _bluetoothPrintState extends State<bluetoothPrint> {
 
     if (!mounted) return;
 
-    if(isConnected) {
+    if (isConnected) {
       setState(() {
-        _connected=true;
+        _connected = true;
       });
     }
   }
@@ -65,152 +60,279 @@ class _bluetoothPrintState extends State<bluetoothPrint> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('BluetoothPrint example app'),
+          leading: IconButton(
+            icon: Icon(FontAwesomeIcons.arrowLeft, color: appColor,),
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => home()));
+            },
+          ),
+          title: const Text(
+            'Print Screen',
+            style: TextStyle(fontSize: 22, color: appColor),
+          ),
+          centerTitle: true,
         ),
         body: RefreshIndicator(
-          onRefresh: () =>
-              bluetoothPrint.startScan(timeout: Duration(seconds: 4)),
+          onRefresh: () => bluetoothPrint.startScan(timeout: Duration(seconds: 4)),
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      child: Text(tips),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    tips,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: _connected ? Colors.green : Colors.red,
                     ),
-                  ],
+                  ),
                 ),
                 Divider(),
                 StreamBuilder<List<BluetoothDevice>>(
                   stream: bluetoothPrint.scanResults,
                   initialData: [],
                   builder: (c, snapshot) => Column(
-                    children: snapshot.data!.map((d) => ListTile(
-                      title: Text(d.name??''),
-                      subtitle: Text(d.address??''),
+                    children: snapshot.data!
+                        .map((d) => ListTile(
+                      title: Text(d.name ?? ''),
+                      subtitle: Text(d.address ?? ''),
                       onTap: () async {
                         setState(() {
                           _device = d;
                         });
                       },
-                      trailing: _device!=null && _device!.address == d.address?Icon(
+                      trailing: _device != null && _device!.address == d.address
+                          ? Icon(
                         Icons.check,
                         color: Colors.green,
-                      ):null,
-                    )).toList(),
+                      )
+                          : null,
+                    ))
+                        .toList(),
                   ),
                 ),
                 Divider(),
-                Container(
-                  padding: EdgeInsets.fromLTRB(20, 5, 20, 10),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          OutlinedButton(
-                            child: Text('connect'),
-                            onPressed:  _connected?null:() async {
-                              if(_device!=null && _device!.address !=null){
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: appColor,
+                              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text('Connect', style: TextStyle(fontSize: 18, color: Colors.white)),
+                            onPressed: _connected
+                                ? null
+                                : () async {
+                              if (_device != null && _device!.address != null) {
                                 setState(() {
-                                  tips = 'connecting...';
+                                  tips = 'Connecting...';
                                 });
                                 await bluetoothPrint.connect(_device!);
-                              }else{
+                              } else {
                                 setState(() {
-                                  tips = 'please select device';
+                                  tips = 'Please select a device';
                                 });
-                                print('please select device');
                               }
                             },
                           ),
                           SizedBox(width: 10.0),
-                          OutlinedButton(
-                            child: Text('disconnect'),
-                            onPressed:  _connected?() async {
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                              backgroundColor: appColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text('Disconnect', style: TextStyle(fontSize: 18, color: Colors.white)),
+                            onPressed: _connected
+                                ? () async {
                               setState(() {
-                                tips = 'disconnecting...';
+                                tips = 'Disconnecting...';
                               });
                               await bluetoothPrint.disconnect();
-                            }:null,
+                            }
+                                : null,
                           ),
                         ],
                       ),
                       Divider(),
-                      OutlinedButton(
-                        child: Text('print receipt(esc)'),
-                        onPressed:  _connected?() async {
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text('Print Receipt (ESC)', style: TextStyle(fontSize: 18, color: Colors.white)),
+                        onPressed: _connected
+                            ? () async {
                           Map<String, dynamic> config = Map();
-
-
                           List<LineText> list = [];
-
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'PARKING TICKET', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1, fontZoom: 2));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'CHEKWA Corp.', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '1234 West Philippine Sea', weight: 0, align: LineText.ALIGN_CENTER,linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'PARKING TICKET',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1,
+                              fontZoom: 2));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'CHEKWA Corp.',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '1234 West Philippine Sea',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
                           list.add(LineText(linefeed: 1));
-
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '--------OFFICIAL RECEIPT--------', weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'TICKET NO: 139477984', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'PLATE NO: HCN879', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'DATE: JUNE 24 2024', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '--------------------------------', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'TIME IN : ', align: LineText.ALIGN_LEFT, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'TIME OUT : ', align: LineText.ALIGN_LEFT,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '------------------------------', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'PRICE : ', align: LineText.ALIGN_LEFT,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '------------------------------', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'This ticket is non-refundable', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'It is subject to the rules and', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'regulation of carpark management', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: '', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_QRCODE, content: 'HCN879', size: 60, align: LineText.ALIGN_CENTER, linefeed: 1, fontZoom: 2));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'Scan me', weight: 0, align: LineText.ALIGN_CENTER, linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '--------OFFICIAL RECEIPT--------',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'TICKET NO: 139477984',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'PLATE NO: HCN879',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'DATE: JUNE 24 2024',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '--------------------------------',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'TIME IN : ',
+                              align: LineText.ALIGN_LEFT,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'TIME OUT : ',
+                              align: LineText.ALIGN_LEFT,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '------------------------------',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'PRICE : ',
+                              align: LineText.ALIGN_LEFT,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '------------------------------',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'This ticket is non-refundable',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'It is subject to the rules and',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'regulation of carpark management',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: '',
+                              weight: 1,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_QRCODE,
+                              content: 'HCN879',
+                              size: 60,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1,
+                              fontZoom: 2));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'Scan me',
+                              weight: 0,
+                              align: LineText.ALIGN_CENTER,
+                              linefeed: 1));
                           list.add(LineText(linefeed: 1));
 
                           await bluetoothPrint.printReceipt(config, list);
-                        }:null,
+                        }
+                            : null,
                       ),
-                      OutlinedButton(
-                        child: Text('print label(tsc)'),
-                        onPressed:  _connected?() async {
-                          Map<String, dynamic> config = Map();
-                          config['width'] = 40; // 标签宽度，单位mm
-                          config['height'] = 70; // 标签高度，单位mm
-                          config['gap'] = 2; // 标签间隔，单位mm
-
-                          // x、y坐标位置，单位dpi，1mm=8dpi
-                          List<LineText> list = [];
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'A Title', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'this is conent left', weight: 0, align: LineText.ALIGN_LEFT,linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_TEXT, content: 'this is conent right', align: LineText.ALIGN_RIGHT,linefeed: 1));
-                          list.add(LineText(linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_BARCODE, content: 'A12312112', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(linefeed: 1));
-                          list.add(LineText(type: LineText.TYPE_QRCODE, content: 'qrcode i', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                          list.add(LineText(linefeed: 1));
-
-                          List<LineText> list1 = [];
-
-                          await bluetoothPrint.printLabel(config, list);
-                          await bluetoothPrint.printLabel(config, list1);
-                        }:null,
-                      ),
-                      OutlinedButton(
-                        child: Text('print selftest'),
-                        onPressed:  _connected?() async {
-                          await bluetoothPrint.printTest();
-                        }:null,
-                      )
                     ],
                   ),
                 )
@@ -230,8 +352,9 @@ class _bluetoothPrintState extends State<bluetoothPrint> {
               );
             } else {
               return FloatingActionButton(
-                  child: Icon(Icons.search),
-                  onPressed: () => bluetoothPrint.startScan(timeout: Duration(seconds: 4)));
+                child: Icon(Icons.search),
+                onPressed: () => bluetoothPrint.startScan(timeout: Duration(seconds: 4)),
+              );
             }
           },
         ),
