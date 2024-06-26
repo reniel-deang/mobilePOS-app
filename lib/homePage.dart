@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:mobilepos_beta/bluetoothPrint.dart';
 
 import 'main.dart';
 import 'timeinScreen.dart';
@@ -110,6 +111,8 @@ class HomeScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()), (route) => false);
+
                 String plateNumber = plateController.text;
                 // Handle time in action (e.g., save to database)
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -239,7 +242,7 @@ class ToiletScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           'Toilet Receipt', style: TextStyle(color: appColor,
-            fontWeight: FontWeight.bold
+
         ),
         ),
       ),
