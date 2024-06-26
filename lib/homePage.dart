@@ -161,7 +161,7 @@ class HomeScreen extends StatelessWidget {
                 // For demonstration purposes, showing a SnackBar with the plate number
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Searching for Plate: $plateNumber'),
+                    content: Text('Searching For Plate: $plateNumber'),
                     duration: Duration(seconds: 4),
                   ),
                 );

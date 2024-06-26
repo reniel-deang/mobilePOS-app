@@ -43,7 +43,7 @@ class _themepickerState extends State<themepicker> {
           'Change Theme Color',
           style: TextStyle(
             color: appColor, // Assuming `appColor` is defined somewhere
-            fontWeight: FontWeight.bold,
+
           ),
         ),
       ),

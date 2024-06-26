@@ -16,7 +16,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
   BluetoothPrint bluetoothPrint = BluetoothPrint.instance;
   bool _connected = false;
   BluetoothDevice? _device;
-  String tips = 'No device connected';
+  String tips = 'No Device Connected';
 
   @override
   void initState() {
