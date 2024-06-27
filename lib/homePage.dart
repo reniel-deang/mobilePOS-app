@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 
 
@@ -12,7 +14,7 @@ import 'toiletbluetoothPrint.dart';
 
 import 'variable/receiptdata.dart';
 
-const Color appColor = Colors.blueAccent; // Define the color you want to use
+const Color appColor = Colors.redAccent; // Define the color you want to use
 
 class home extends StatelessWidget {
   @override
@@ -52,7 +54,9 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    receiptdata();
+
+    fetchdata();
+
   }
 
 Future <void> receiptdata() async
@@ -83,6 +87,26 @@ Future <void> receiptdata() async
 
   }
 }
+
+  Future <void> fetchdata() async
+  {
+    try{
+      final apilink = "http://192.168.1.45:8000/api/fetch";
+      final response = await http.get(Uri.parse(apilink));
+
+      Map<String, dynamic> company_details = Map<String, dynamic>.from(jsonDecode(response.body));
+
+      receipt_title = company_details['details'][0]['title'];
+      company_name = company_details['details'][0]['company_name'];
+      company_address= company_details['details'][0]['company_address'];
+
+
+    }
+    catch(e)
+    {
+      print(e);
+    }
+  }
 
 
   @override
