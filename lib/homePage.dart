@@ -2,12 +2,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:mobilepos_beta/bluetoothPrint.dart';
+
+
 
 import 'main.dart';
-import 'timeinScreen.dart';
-import 'timeoutScreen.dart';
 import 'asset/themecolor.dart';
+import 'package:mobilepos_beta/bluetoothPrint.dart';
+import 'toiletbluetoothPrint.dart';
+
+import 'variable/receiptdata.dart';
 
 const Color appColor = Colors.blueAccent; // Define the color you want to use
 
@@ -45,6 +48,42 @@ class _MainPageState extends State<MainPage> {
     Navigator.pop(context); // Close the drawer
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    receiptdata();
+  }
+
+Future <void> receiptdata() async
+{
+  try{
+    receipt_title = "Issue Parking";
+    company_name = "SM Malls";
+    company_address = "City Of San Fernando Pampanga";
+    /*
+    if(receipt_title == null && company_name == null && company_address == null)
+    {
+      receipt_title = "Your Title";
+      company_name = "Your Company";
+      company_address= "Your Address";
+    }
+
+     */
+    toilet_title = "Toilet Receipt";
+  }
+  catch(e)
+  {
+    if(receipt_title == null && company_name == null && company_address == null)
+      {
+        receipt_title = "Your Title";
+        company_name = "Your Company";
+        company_address= "Your Address";
+      }
+
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +145,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Parking Screen',
+          'Issue Parking Ticket',
           style: TextStyle(color: appColor),
         ),
       ),
@@ -200,17 +239,19 @@ class _TimeInDialogState extends State<TimeInDialog> {
         ),
         ElevatedButton(
           onPressed: () {
-            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()), (route) => false);
+            setState(() {
+              String plateNumber = widget.plateController.text;
 
-            String plateNumber = widget.plateController.text;
-            // Handle time in action (e.g., save to database)
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Plate: $plateNumber\nTime In: ${_getCurrentTime()}'),
-                duration: Duration(seconds: 4),
-              ),
-            );
-            Navigator.pop(context); // Close the dialog
+              timein_print = _currentTime;
+              print_platenum = plateNumber;
+
+              print(plateNumber);
+              print(_currentTime);
+
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()), (route) => false);
+            });
+
+
           },
           child: Text('Print', style: TextStyle(color: Colors.white)),
         ),
@@ -316,14 +357,20 @@ class ToiletScreen extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => _printReceipt(context),
+
+          onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => toiletBluetoothPrintPage()));
+          },
+          /*
           style: ElevatedButton.styleFrom(
             backgroundColor: appColor,
             padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
-          ),
+          )
+          ,
+           */
           child: const Text(
             'ISSUE RECEIPT',
             style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),

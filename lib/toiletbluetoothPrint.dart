@@ -8,12 +8,12 @@ import 'homePage.dart';
 
 import 'variable/receiptdata.dart';
 
-class BluetoothPrintPage extends StatefulWidget {
+class toiletBluetoothPrintPage extends StatefulWidget {
   @override
-  _BluetoothPrintPageState createState() => _BluetoothPrintPageState();
+  _toiletBluetoothPrintPageState createState() => _toiletBluetoothPrintPageState();
 }
 
-class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
+class _toiletBluetoothPrintPageState extends State<toiletBluetoothPrintPage> {
   BluetoothPrint bluetoothPrint = BluetoothPrint.instance;
   bool _connected = false;
   BluetoothDevice? _device;
@@ -186,7 +186,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                           List<LineText> list = [];
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: '$receipt_title',
+                              content: '$toilet_title',
                               weight: 1,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1,
@@ -212,18 +212,6 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'TICKET NO: 139477984',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'PLATE NO: $print_platenum',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
                               content: 'DATE: $timein_print',
                               weight: 0,
                               align: LineText.ALIGN_CENTER,
@@ -242,23 +230,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'TIME IN : $timein_print',
-                              align: LineText.ALIGN_LEFT,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'TIME OUT : ',
-                              align: LineText.ALIGN_LEFT,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: '------------------------------',
-                              weight: 1,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'PRICE : ',
+                              content: 'PRICE : $toilet_price',
                               align: LineText.ALIGN_LEFT,
                               linefeed: 1));
                           list.add(LineText(
@@ -285,49 +257,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               weight: 1,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'This ticket is non-refundable',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'It is subject to the rules and',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'regulation of carpark management',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: '',
-                              weight: 1,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: '',
-                              weight: 1,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_QRCODE,
-                              content: '$print_platenum',
-                              size: 60,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1,
-                              fontZoom: 2));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'Scan me',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
+
                           list.add(LineText(linefeed: 1));
 
                           await bluetoothPrint.printReceipt(config, list);
