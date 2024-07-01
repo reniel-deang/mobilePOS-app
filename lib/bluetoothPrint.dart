@@ -258,7 +258,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'PRICE : ',
+                              content: 'PRICE : $parking_price',
                               align: LineText.ALIGN_LEFT,
                               linefeed: 1));
                           list.add(LineText(
@@ -287,22 +287,11 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'This ticket is non-refundable',
+                              content: '$footer',
                               weight: 0,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'It is subject to the rules and',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
-                              content: 'regulation of carpark management',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
+
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
                               content: '',
@@ -317,7 +306,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_QRCODE,
-                              content: '$print_platenum',
+                              content: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
                               size: 60,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1,

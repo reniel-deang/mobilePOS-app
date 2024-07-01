@@ -212,7 +212,7 @@ class _toiletBluetoothPrintPageState extends State<toiletBluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'DATE: $timein_print',
+                              content: 'DATE: June 28, 2024',
                               weight: 0,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1));
@@ -230,7 +230,7 @@ class _toiletBluetoothPrintPageState extends State<toiletBluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'PRICE : $toilet_price',
+                              content: 'PRICE : 300 PESOS',
                               align: LineText.ALIGN_LEFT,
                               linefeed: 1));
                           list.add(LineText(

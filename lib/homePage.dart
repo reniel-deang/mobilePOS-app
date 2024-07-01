@@ -51,6 +51,8 @@ class _MainPageState extends State<MainPage> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
   @override
+
+
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -58,35 +60,6 @@ class _MainPageState extends State<MainPage> {
     fetchdata();
 
   }
-
-Future <void> receiptdata() async
-{
-  try{
-    receipt_title = "Issue Parking";
-    company_name = "SM Malls";
-    company_address = "City Of San Fernando Pampanga";
-    /*
-    if(receipt_title == null && company_name == null && company_address == null)
-    {
-      receipt_title = "Your Title";
-      company_name = "Your Company";
-      company_address= "Your Address";
-    }
-
-     */
-    toilet_title = "Toilet Receipt";
-  }
-  catch(e)
-  {
-    if(receipt_title == null && company_name == null && company_address == null)
-      {
-        receipt_title = "Your Title";
-        company_name = "Your Company";
-        company_address= "Your Address";
-      }
-
-  }
-}
 
   Future <void> fetchdata() async
   {
@@ -96,9 +69,18 @@ Future <void> receiptdata() async
 
       Map<String, dynamic> company_details = Map<String, dynamic>.from(jsonDecode(response.body));
 
+      //receipt details
       receipt_title = company_details['details'][0]['title'];
+      toilet_title = company_details['details'][0]['toilet_title'];
       company_name = company_details['details'][0]['company_name'];
       company_address= company_details['details'][0]['company_address'];
+      footer = company_details['details'][0]['footer'];
+
+      //prices and configurations
+      parking_price = company_details['parking_rate'][0];
+      toilet_price = company_details['toilet_rate'][0];
+
+      print(toilet_price);
 
 
     }
