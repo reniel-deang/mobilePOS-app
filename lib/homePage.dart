@@ -1,3 +1,4 @@
+//necessary libraries
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -5,14 +6,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
-
-
+//ui imports
 import 'main.dart';
 import 'asset/themecolor.dart';
 import 'package:mobilepos_beta/bluetoothPrint.dart';
 import 'toiletbluetoothPrint.dart';
 
 import 'variable/receiptdata.dart';
+import 'variable/hostaddress.dart';
 
 const Color appColor = Colors.redAccent; // Define the color you want to use
 
@@ -57,6 +58,7 @@ class _MainPageState extends State<MainPage> {
     // TODO: implement initState
     super.initState();
 
+    //first function to run every time this page loads
     fetchdata();
 
   }
@@ -64,7 +66,7 @@ class _MainPageState extends State<MainPage> {
   Future <void> fetchdata() async
   {
     try{
-      final apilink = "http://192.168.1.45:8000/api/fetch";
+      final apilink = hostaddress + "/api/fetch";
       final response = await http.get(Uri.parse(apilink));
 
       Map<String, dynamic> company_details = Map<String, dynamic>.from(jsonDecode(response.body));
@@ -89,6 +91,8 @@ class _MainPageState extends State<MainPage> {
       print(e);
     }
   }
+
+
 
 
   @override
@@ -223,6 +227,31 @@ class _TimeInDialogState extends State<TimeInDialog> {
     return DateFormat('yyyy-MM-dd  hh:mm a').format(DateTime.now());
   }
 
+  Future<void> validate_platenum() async
+  {
+    try
+    {
+      final apilink = hostaddress + "/api/platevalidation";
+
+
+      Map<String, dynamic> send_platenum =
+      {
+        "plate_number" : print_platenum
+      };
+
+      final response = await http.post(Uri.parse(apilink),body: send_platenum);
+
+      Map<String, dynamic> apiresponse = Map<String, dynamic>.from(jsonDecode(response.body));
+      print(apiresponse['response']);
+      print(apiresponse['message']);
+
+    }
+    catch(e)
+    {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -245,16 +274,22 @@ class _TimeInDialogState extends State<TimeInDialog> {
         ),
         ElevatedButton(
           onPressed: () {
+
             setState(() {
               String plateNumber = widget.plateController.text;
 
               timein_print = _currentTime;
-              print_platenum = plateNumber;
+              print_platenum = plateNumber.toUpperCase();
 
               print(plateNumber);
               print(_currentTime);
 
+              validate_platenum();
+
+              /*
               Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()), (route) => false);
+
+               */
             });
 
 

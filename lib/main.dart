@@ -1,8 +1,13 @@
+import 'dart:convert';
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
 
 import 'homePage.dart';
+
+import 'variable/hostaddress.dart';
 
 
 void main() {
@@ -16,6 +21,8 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
+
+
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -68,6 +75,36 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
+
+  Future <void> login() async
+  {
+    try
+    {
+      final apilink = hostaddress + "/api/login";
+
+
+      Map<String, dynamic> loginattempt =
+      {
+        "username" : _emailController.text,
+        "password" : _passwordController.text,
+
+      };
+
+      final response = await http.post(Uri.parse(apilink),body: loginattempt);
+
+      Map<String, dynamic> apiresponse = Map<String, dynamic>.from(jsonDecode(response.body));
+
+      print(apiresponse);
+    }
+
+    catch(e)
+    {
+      print(e);
+    }
+
+
+
+  }
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -159,8 +196,13 @@ class _LoginFormState extends State<LoginForm> {
               child: MaterialButton(
                 onPressed: () {
 
+                  setState(() {
+                    login();
+                  });
+                  /*
                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => home()), (route) => false);
 
+                   */
                 },
                 child: const Text(
                   'Login',
