@@ -94,12 +94,33 @@ class _LoginFormState extends State<LoginForm> {
 
       Map<String, dynamic> apiresponse = Map<String, dynamic>.from(jsonDecode(response.body));
 
-      print(apiresponse);
+      if(apiresponse['status'] == 200)
+        {
+          print(response.body);
+          token = apiresponse['access_token'];
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => home()), (route) => false);
+        }
+      else if(apiresponse['status'] == 404)
+        {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Invalid Credentials, Please Try Again!'))
+          );
+          print(response.body);
+        }
+      else
+        {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Credentials cannot be blank. Please try again. '))
+          );
+          print(response.body);
+        }
     }
 
     catch(e)
     {
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Something went wrong. Please Check your internet connection. '))
+      );
     }
 
 

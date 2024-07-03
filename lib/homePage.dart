@@ -15,7 +15,7 @@ import 'toiletbluetoothPrint.dart';
 import 'variable/receiptdata.dart';
 import 'variable/hostaddress.dart';
 
-const Color appColor = Colors.redAccent; // Define the color you want to use
+const Color appColor = Colors.greenAccent; // Define the color you want to use
 
 class home extends StatelessWidget {
   @override
@@ -67,7 +67,9 @@ class _MainPageState extends State<MainPage> {
   {
     try{
       final apilink = hostaddress + "/api/fetch";
-      final response = await http.get(Uri.parse(apilink));
+      final response = await http.get(Uri.parse(apilink),
+          headers: {
+            'Authorization': 'Bearer $token'});
 
       Map<String, dynamic> company_details = Map<String, dynamic>.from(jsonDecode(response.body));
 
@@ -81,9 +83,6 @@ class _MainPageState extends State<MainPage> {
       //prices and configurations
       parking_price = company_details['parking_rate'][0];
       toilet_price = company_details['toilet_rate'][0];
-
-      print(toilet_price);
-
 
     }
     catch(e)
@@ -239,7 +238,8 @@ class _TimeInDialogState extends State<TimeInDialog> {
         "plate_number" : print_platenum
       };
 
-      final response = await http.post(Uri.parse(apilink),body: send_platenum);
+      final response = await http.post(Uri.parse(apilink),body: send_platenum,  headers: {
+        'Authorization': 'Bearer $token'});
 
       Map<String, dynamic> apiresponse = Map<String, dynamic>.from(jsonDecode(response.body));
       print(apiresponse['response']);
