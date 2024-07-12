@@ -18,7 +18,7 @@ import 'toiletbluetoothPrint.dart';
 import 'variable/receiptdata.dart';
 import 'variable/hostaddress.dart';
 
-const Color appColor = Colors.orangeAccent; // Define the color you want to use
+const Color appColor = Colors.blueAccent; // Define the color you want to use
 
 class home extends StatelessWidget {
   @override
@@ -328,7 +328,7 @@ class _TimeInDialogState extends State<TimeInDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Time In: $_currentTime', style: TextStyle(
-          color: appColor, fontSize: 20
+          color: Colors.black54, fontSize: 20
       ),),
       content: TextField(
         controller: widget.plateController,
@@ -429,7 +429,7 @@ class _TimeOutDialogState extends State<TimeOutDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Time Out: $_currentTime', style: TextStyle(
-          color: appColor, fontSize: 19
+          color: Colors.black54, fontSize: 19
       ),),
       content: TextField(
         controller: widget.plateController,
@@ -553,26 +553,52 @@ class _ToiletScreenState extends State<ToiletScreen> {
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () async{
-            String timenow = _currentTime;
-            String toilet_response = await _databaseService.insert_toilet_receipt(toilet_price, timenow);
+          onPressed: () async {
+            bool proceed = await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Print Receipt?',
+                  style: TextStyle(color: Colors.black54),),
+                  content: const Text('Do you want to proceed with printing the receipt?',
+                    style: TextStyle(color: Colors.black54),),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                      child: const Text('Cancel',
+                        style: TextStyle(color: Colors.white),),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                      child: const Text('Proceed',
+                        style: TextStyle(color: Colors.white),),
+                    ),
+                  ],
+                );
+              },
+            );
 
-            if(toilet_response == "200")
-              {
+            if (proceed) {
+              String timenow = _currentTime;
+              String toilet_response = await _databaseService.insert_toilet_receipt(toilet_price, timenow);
+
+              if (toilet_response == "200") {
                 print("Toilet Data Inserted successfully");
-
-              }
-            else if (toilet_response == "404")
-              {
+              } else if (toilet_response == "404") {
                 print("Toilet Data Inserted failed");
-              }
-            else
-              {
-                print("Unknown Error Occured");
+              } else {
+                print("Unknown Error Occurred");
               }
 
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => toiletBluetoothPrintPage()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => toiletBluetoothPrintPage()),
+              );
+            }
           },
           child: const Text(
             'ISSUE RECEIPT',
