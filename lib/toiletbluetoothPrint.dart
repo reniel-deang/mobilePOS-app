@@ -212,7 +212,7 @@ class _toiletBluetoothPrintPageState extends State<toiletBluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'DATE: June 28, 2024',
+                              content: 'DATE: $toilet_time',
                               weight: 0,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1));
@@ -230,7 +230,7 @@ class _toiletBluetoothPrintPageState extends State<toiletBluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'PRICE : 300 PESOS',
+                              content: 'PRICE : $toilet_price',
                               align: LineText.ALIGN_LEFT,
                               linefeed: 1));
                           list.add(LineText(
@@ -264,6 +264,30 @@ class _toiletBluetoothPrintPageState extends State<toiletBluetoothPrintPage> {
                         }
                             : null,
                       ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: appColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text('Back to Homepage', style: TextStyle(fontSize: 18, color: Colors.white)),
+                        onPressed: () {
+                          setState(() {
+                            timein_print = null;
+                            timeout_print = "";
+                            print_platenum = null;
+                            fetchedtimein_print = "";
+                            ticket_number = "";
+                            hours = "";
+                            parking_price = "";
+
+
+                          });
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => home()));
+                        },)
                     ],
                   ),
                 )

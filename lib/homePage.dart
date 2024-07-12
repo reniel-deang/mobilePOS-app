@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'services/database_service.dart';
+import 'variable/status.dart';
+
 
 //ui imports
-import 'main.dart';
+import 'loginPage.dart';
 import 'asset/themecolor.dart';
 import 'package:mobilepos_beta/bluetoothPrint.dart';
 import 'toiletbluetoothPrint.dart';
@@ -15,7 +18,7 @@ import 'toiletbluetoothPrint.dart';
 import 'variable/receiptdata.dart';
 import 'variable/hostaddress.dart';
 
-const Color appColor = Colors.greenAccent; // Define the color you want to use
+const Color appColor = Colors.orangeAccent; // Define the color you want to use
 
 class home extends StatelessWidget {
   @override
@@ -53,48 +56,104 @@ class _MainPageState extends State<MainPage> {
   }
   @override
 
+  Timer? _timer;
+  final DatabaseService _databaseService = DatabaseService.instance;
+
 
   void initState() {
     // TODO: implement initState
-    super.initState();
 
-    //first function to run every time this page loads
+
+    super.initState();
+    _databaseService.fetchticketandconfiguration();
+    _databaseService.assigntoken();
     fetchdata();
 
+
+    //_timer = Timer.periodic(Duration(seconds: 1), (Timer t) => fetchdata());
   }
 
-  Future <void> fetchdata() async
-  {
-    try{
+  Future<void> fetchdata() async {
+    try {
       final apilink = hostaddress + "/api/fetch";
       final response = await http.get(Uri.parse(apilink),
           headers: {
-            'Authorization': 'Bearer $token'});
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+      });
 
-      Map<String, dynamic> company_details = Map<String, dynamic>.from(jsonDecode(response.body));
+      if (response.statusCode == 200) {
+        // Check if response body is valid JSON
+        try {
+          Map<String, dynamic> company_details = jsonDecode(response.body);
 
-      //receipt details
-      receipt_title = company_details['details'][0]['title'];
-      toilet_title = company_details['details'][0]['toilet_title'];
-      company_name = company_details['details'][0]['company_name'];
-      company_address= company_details['details'][0]['company_address'];
-      footer = company_details['details'][0]['footer'];
+          //receipt details
+          String temp_receipt_title = company_details['details'][0]['title'];
+          String temp_toilet_title = company_details['details'][0]['toilet_title'];
+          String temp_company_name = company_details['details'][0]['company_name'];
+          String temp_company_address = company_details['details'][0]['company_address'];
+          String temp_footer = company_details['details'][0]['footer'];
+          String temp_parking_price = company_details['parking_rate'][0];
+          String temp_toilet_price = company_details['toilet_rate'][0];
 
-      //prices and configurations
-      parking_price = company_details['parking_rate'][0];
-      toilet_price = company_details['toilet_rate'][0];
+          print(temp_parking_price);
 
-    }
-    catch(e)
-    {
+          String storedetails = await _databaseService.storeticketdetails(
+              temp_receipt_title, temp_toilet_title, temp_company_name,
+              temp_company_address, temp_footer, temp_parking_price, temp_toilet_price);
+
+          if (storedetails == "200") {
+            print("SUCCESSFULLY INSERTED DATA FROM API TO DATABASE");
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Updating Details in Api is Successful"),
+                duration: Duration(seconds: 3),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else if (storedetails == "404") {
+            print("SOMETHING WENT WRONG WITH THE DATABASE. PLEASE TRY AGAIN");
+
+          }
+        } catch (e) {
+          // Handle case where response is not JSON
+          print("Failed to decode JSON: $e");
+          print("Response body: ${response.body}");
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Updating Details in Api Failed"),
+              duration: Duration(seconds: 3),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        print("Error: ${response.statusCode}");
+        print("Response body: ${response.body}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Something went wrong in Api server, please try again"),
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.orange,
+          ),
+        );
+
+      }
+    } catch (e) {
       print(e);
     }
   }
 
 
 
-
   @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
@@ -205,6 +264,8 @@ class _TimeInDialogState extends State<TimeInDialog> {
   late Timer _timer;
   late String _currentTime;
 
+  final DatabaseService _databaseService = DatabaseService.instance;
+
   @override
   void initState() {
     super.initState();
@@ -223,7 +284,7 @@ class _TimeInDialogState extends State<TimeInDialog> {
   }
 
   String _getCurrentTime() {
-    return DateFormat('yyyy-MM-dd  hh:mm a').format(DateTime.now());
+    return DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now());
   }
 
   Future<void> validate_platenum() async
@@ -239,7 +300,8 @@ class _TimeInDialogState extends State<TimeInDialog> {
       };
 
       final response = await http.post(Uri.parse(apilink),body: send_platenum,  headers: {
-        'Authorization': 'Bearer $token'});
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json'});
 
       Map<String, dynamic> apiresponse = Map<String, dynamic>.from(jsonDecode(response.body));
       print(apiresponse['response']);
@@ -273,26 +335,28 @@ class _TimeInDialogState extends State<TimeInDialog> {
           child: Text('Cancel', style: TextStyle(color: Colors.white)),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async{
+            String plateNumber = widget.plateController.text;
+            timein_print = _currentTime;
+            print_platenum = plateNumber.toUpperCase();
+            print(plateNumber);
+            print(_currentTime);
+            String insert = await _databaseService.insert_issued_tickets(plateNumber.toUpperCase(), timein_print!);
 
-            setState(() {
-              String plateNumber = widget.plateController.text;
+            if(insert == "200")
+              {
+                print("SUCESSFULLY INSERT TO DATABASE");
+                validate_platenum();
+                if(mounted)
+                  {
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()));
+                  }
 
-              timein_print = _currentTime;
-              print_platenum = plateNumber.toUpperCase();
-
-              print(plateNumber);
-              print(_currentTime);
-
-              validate_platenum();
-
-              /*
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()), (route) => false);
-
-               */
-            });
-
-
+              }
+            else if(insert == "404")
+              {
+                print("FAILED INSERT TO DATABASE");
+              }
           },
           child: Text('Print', style: TextStyle(color: Colors.white)),
         ),
@@ -313,6 +377,7 @@ class TimeOutDialog extends StatefulWidget {
 class _TimeOutDialogState extends State<TimeOutDialog> {
   late Timer _timer;
   late String _currentTime;
+  final DatabaseService _databaseService = DatabaseService.instance;
 
   @override
   void initState() {
@@ -332,7 +397,22 @@ class _TimeOutDialogState extends State<TimeOutDialog> {
   }
 
   String _getCurrentTime() {
-    return DateFormat('yyyy-MM-dd  hh:mm a').format(DateTime.now());
+    return DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now());
+  }
+
+  double calculateTotalValue(DateTime timeIn, DateTime timeOut, double pricePerHour) {
+    Duration duration = timeOut.difference(timeIn);
+    double hour = duration.inMinutes / 60.0;
+
+    // If duration is less than or equal to 1 hour, charge for 1 hour
+    if (hour <= 1.0) {
+      hours = hour.toStringAsFixed(2);
+      return pricePerHour;
+    }
+
+    // If duration is more than 1 hour, round up to the nearest hour
+    hours = hour.toStringAsFixed(2);
+    return pricePerHour * hour.ceil();
   }
 
   @override
@@ -356,12 +436,69 @@ class _TimeOutDialogState extends State<TimeOutDialog> {
           child: Text('Cancel', style: TextStyle(color: Colors.white)),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             String plateNumber = widget.plateController.text;
-            // Implement your logic to search for the plate number
-            setState(() {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()));
-            });
+
+            timeout_print = _currentTime;
+            print_platenum = plateNumber.toUpperCase();
+
+            String? existing = await _databaseService.search_platenum(print_platenum);
+
+            if (existing == "200") {
+              print("PLATE NUMBER FOUND ON DATABASE");
+
+              DateTime timeIn = DateFormat("yyyy-MM-dd HH:mm:ss").parse(fetchedtimein_print);
+              DateTime timeOut = DateFormat("yyyy-MM-dd HH:mm:ss").parse(timeout_print);
+
+              print(fetchedtimein_print);
+              print(timeout_print);
+              double pricePerHour = double.parse(parking_rate);
+
+              double totalValue = calculateTotalValue(timeIn, timeOut, pricePerHour);
+
+              print (hours);
+              print("Total Value " + totalValue.toStringAsFixed(2));
+
+              String? update = await _databaseService.update_issued_receipt(print_platenum,timeout_print, hours, totalValue.toStringAsFixed(2));
+
+              if (update == "200")
+                {
+                  print("RECEIPT UPDATED SUCCESSFULLY");
+
+                  timein_print = fetchedtimein_print;
+                  parking_price = totalValue.toStringAsFixed(2);
+
+                  setState(() {
+                    if(mounted)
+                      {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()));
+                      }
+
+                  });
+
+                }
+
+              else if (update == "404")
+                {
+                  print("RECEIPT UPDATED ERROR HAS OCCURED");
+
+                }
+
+              else
+                {
+                  print("UNKNOWN ERROR");
+
+                }
+
+
+
+            } else if (existing == "404") {
+              print("PLATE NUMBER NOT FOUND IN DATABASE");
+
+            } else {
+              print("ERROR SEARCHING PLATE NUMBER");
+
+            }
           },
           child: Text('Search', style: TextStyle(color: Colors.white)),
         ),
@@ -370,20 +507,28 @@ class _TimeOutDialogState extends State<TimeOutDialog> {
   }
 }
 
-class ToiletScreen extends StatelessWidget {
-  // Define the fixed amount
-  final double fixedAmount = 10.00;
+class ToiletScreen extends StatefulWidget {
+  @override
+  _ToiletScreenState createState() => _ToiletScreenState();
+}
 
-  void _printReceipt(BuildContext context) {
-    String amount = fixedAmount.toStringAsFixed(2); // Format to two decimal places
-    String currentDateTime = DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now());
+class _ToiletScreenState extends State<ToiletScreen> {
+  late String _currentTime;
+  final DatabaseService _databaseService = DatabaseService.instance;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Amount: ₱ $amount\nDate: $currentDateTime'),
-        duration: Duration(seconds: 4),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _currentTime = _getCurrentTime();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String _getCurrentTime() {
+    return DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now());
   }
 
   @override
@@ -398,20 +543,27 @@ class ToiletScreen extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
+          onPressed: () async{
+            String timenow = _currentTime;
+            String toilet_response = await _databaseService.insert_toilet_receipt(toilet_price, timenow);
 
-          onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => toiletBluetoothPrintPage()));
+            if(toilet_response == "200")
+              {
+                print("Toilet Data Inserted successfully");
+
+              }
+            else if (toilet_response == "404")
+              {
+                print("Toilet Data Inserted failed");
+              }
+            else
+              {
+                print("Unknown Error Occured");
+              }
+
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => toiletBluetoothPrintPage()));
           },
-          /*
-          style: ElevatedButton.styleFrom(
-            backgroundColor: appColor,
-            padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          )
-          ,
-           */
           child: const Text(
             'ISSUE RECEIPT',
             style: TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
@@ -422,11 +574,47 @@ class ToiletScreen extends StatelessWidget {
   }
 }
 
+
 class MainDrawer extends StatelessWidget {
   void _navigateTo(BuildContext context, Widget screen) {
     Navigator.pop(context); // Close the drawer
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
+  @override
+
+  final DatabaseService _databaseService = DatabaseService.instance;
+
+  Future <String> logout() async
+  {
+    try{
+      final apilink = hostaddress + "/api/logout";
+      final response = await http.get(Uri.parse(apilink),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          });
+
+      if(response.statusCode == 200)
+      {
+        Map<String, dynamic> result = jsonDecode(response.body);
+        _databaseService.deletetoken();
+        return "200";
+      }
+      else
+      {
+        print("Error: ${response.statusCode}");
+        print("Response body: ${response.body}");
+        return "404";
+      }
+
+    }
+    catch(e)
+    {
+      print(e);
+      return "404";
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -504,9 +692,12 @@ class MainDrawer extends StatelessWidget {
                         child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
                       ),
                       TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) => MyApp()));
+                        onPressed: () async {
+                          String run = await logout();
+                          if(run == "200")
+                            {
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyApp()));
+                            }
                         },
                         child: Text('LOGOUT', style: TextStyle(fontWeight: FontWeight.bold, color: appColor),),
                       ),
@@ -521,3 +712,4 @@ class MainDrawer extends StatelessWidget {
     );
   }
 }
+

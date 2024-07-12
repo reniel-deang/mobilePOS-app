@@ -64,13 +64,6 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(FontAwesomeIcons.arrowLeft, color: appColor,),
-            onPressed: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => home()));
-            },
-          ),
           title: const Text(
             'Print Screen',
             style: TextStyle(fontSize: 22, color: appColor),
@@ -179,7 +172,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: Text('Print Receipt (ESC)', style: TextStyle(fontSize: 18, color: Colors.white)),
+                        child: Text('Print Receipt (OK)', style: TextStyle(fontSize: 18, color: Colors.white)),
                         onPressed: _connected
                             ? () async {
                           Map<String, dynamic> config = Map();
@@ -212,7 +205,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'TICKET NO: 139477984',
+                              content: 'TICKET NO: $ticket_number',
                               weight: 0,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1));
@@ -224,7 +217,7 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'DATE: $timein_print',
+                              content: 'DATE: ',
                               weight: 0,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1));
@@ -247,7 +240,12 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'TIME OUT : ',
+                              content: 'TIME OUT : $timeout_print',
+                              align: LineText.ALIGN_LEFT,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
+                              content: 'ALLOTTED HOURS : $hours',
                               align: LineText.ALIGN_LEFT,
                               linefeed: 1));
                           list.add(LineText(
@@ -323,6 +321,30 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                         }
                             : null,
                       ),
+                      SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: appColor,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text('Back to Homepage', style: TextStyle(fontSize: 18, color: Colors.white)),
+                  onPressed: () {
+                      setState(() {
+                        timein_print = null;
+                        timeout_print = "";
+                        print_platenum = null;
+                        fetchedtimein_print = "";
+                        ticket_number = "";
+                        hours = "";
+                        parking_price = "";
+
+
+                      });
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => home()));
+                  },)
                     ],
                   ),
                 )
