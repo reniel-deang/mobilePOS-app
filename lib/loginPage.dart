@@ -250,18 +250,6 @@ class _LoginFormState extends State<LoginForm> {
             ),
           ),
           const SizedBox(height: 10),
-          GestureDetector(
-            onTap: () {
-              // Handle forgot password tap
-              showSnackBar(context, 'Forgot Password');
-            },
-            child: const Text(
-              'Forgot Password?',
-              style: TextStyle(
-                color: appColor,
-              ),
-            ),
-          ),
         ],
       ),
     );
