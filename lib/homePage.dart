@@ -431,22 +431,37 @@ class _TimeOutDialogState extends State<TimeOutDialog> {
       title: Text('Time Out: $_currentTime', style: TextStyle(
           color: Colors.black54, fontSize: 19
       ),),
-      content: TextField(
-        controller: widget.plateController,
-        decoration: InputDecoration(
-          hintText: 'Enter Plate Number',
-          border: OutlineInputBorder(),
+      content: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextField(
+              controller: widget.plateController,
+              decoration: InputDecoration(
+                hintText: 'Enter Plate Number',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 3,),
+            Text(messages, style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),)
+          ],
         ),
       ),
       actions: [
         ElevatedButton(
           onPressed: () {
+            setState(() {
+              messages = "";
+            });
             Navigator.pop(context); // Close the dialog without any action
           },
           child: Text('Cancel', style: TextStyle(color: Colors.white)),
         ),
         ElevatedButton(
           onPressed: () async {
+
+            setState(() {
+              messages = "";
+            });
             String plateNumber = widget.plateController.text;
 
             timeout_print = _currentTime;
@@ -503,6 +518,9 @@ class _TimeOutDialogState extends State<TimeOutDialog> {
 
 
             } else if (existing == "404") {
+              setState(() {
+                messages = "Plate Number Not Existing";
+              });
               print("PLATE NUMBER NOT FOUND IN DATABASE");
 
             } else {
