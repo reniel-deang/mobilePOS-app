@@ -50,6 +50,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  void _refreshPage() async{
+    await fetchdata();
+  }
   void _navigateTo(BuildContext context, Widget screen) {
     Navigator.pop(context); // Close the drawer
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
@@ -173,6 +176,13 @@ class _MainPageState extends State<MainPage> {
               Tab(icon: Icon(FontAwesomeIcons.toilet, color: appColor)),
             ],
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.refresh, color: appColor,),
+              onPressed: _refreshPage,
+            ),
+
+          ],
         ),
         body: TabBarView(
           children: [
@@ -668,7 +678,9 @@ class MainDrawer extends StatelessWidget {
               size: 20,
             ),
             title: const Text("Settings"),
-            onTap: () => _navigateTo(context, themepicker()), // Assuming a SettingsScreen exists
+            onTap: (){
+
+            }, // Assuming a SettingsScreen exists
           ),
           ListTile(
             leading: const Icon(
