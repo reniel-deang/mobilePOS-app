@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:mobilepos_beta/variable/hostaddress.dart';
 import 'package:mobilepos_beta/variable/receiptdata.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:mobilepos_beta/variable/status.dart';
+import 'package:http/http.dart' as http;
 
 class DatabaseService {
   // Declaring database variable called _db
@@ -192,12 +195,21 @@ class DatabaseService {
 
   }
 
-  void assigntoken() async
+  Future <String> assigntoken() async
   {
     final db = await database;
     List<Map> list = await db.rawQuery('SELECT * FROM $_configtable WHERE $_configid = 1');
 
     token = await list[0]['token'];
+
+    if(token!= "")
+      {
+        return "200";
+      }
+    else
+      {
+        return "404";
+      }
 
   }
 
@@ -505,12 +517,110 @@ class DatabaseService {
 
     List<Map> list = await db.rawQuery('SELECT * FROM $_ticket_detailstable WHERE $_ticket_detailsid = 1');
     List<Map> list1 = await db.rawQuery('SELECT * FROM $_mobilepos_configurationtable WHERE $_mobilepos_configurationid = 1');
-    List<Map> list2 = await db.rawQuery('SELECT * FROM $_toiletreceipttable ');
-    print(list);
-    print(list1);
-    print(list2);
+    List<Map<String, dynamic>> list2 = await db.query(_issuedticketstable,
+      where: '$_ticketapistatus = ? AND $_issuedticketsstatus = ?',
+      whereArgs: ['404', 'paid'],);
+
+    List<Map<String, dynamic>> list3 = await db.query(_issuedticketstable);
+    List<Map<String, dynamic>> list4 = await db.query(_toiletreceipttable);
+    //print(list);
+    //print(list1);
+    print(list3);
+    print(list4);
+
+    /*
+    list2.forEach((row){
+      print(row);
+    });
+
+     */
+
+
 
   }
 
+  Future <String> uploaddata() async {
+    final db = await database;
+
+    // Query the database
+    List<Map<String, dynamic>> upload = await db.query(
+      _issuedticketstable,
+      where: '$_ticketapistatus = ? AND $_issuedticketsstatus = ?',
+      whereArgs: ['404', 'paid'],
+    );
+
+    if (upload.isEmpty) {
+      print('No data to upload');
+      return "404";
+    }
+
+    // Print the retrieved data
+    //print(upload);
+
+    // Create a new list with the required keys
+    List<Map<String, dynamic>> uploads = [];
+    upload.forEach((row) {
+      uploads.add({
+        'ticket_number': row[_issuedticketsnumber],
+        'plate_number': row[_issuedticketsplatenumber],
+        'time-in': row[_issuedticketstimein],
+        'time-out': row[_issuedticketstimeout],
+        'hours': row[_issuedticketshours],
+        'total': row[_issuedticketstotal],
+        'status': row[_issuedticketsstatus],
+      });
+    });
+
+    print(uploads);
+
+    /*
+    uploads.forEach((row) {
+      print(row);
+    });
+     */
+
+    try
+    {
+      final apilink = hostaddress + "/api/upload";
+
+      // Send the POST request
+      final response = await http.post(
+        Uri.parse(apilink),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(uploads),
+      );
+
+      // Print the response
+      print(response.body);
+
+      if(response.statusCode == 200)
+        {
+          Map<String, dynamic> values = {
+            _ticketapistatus: '200',
+          };
+
+          await db.update(_issuedticketstable, values,
+              where: '$_ticketapistatus = ? AND $_issuedticketsstatus = ?',
+              whereArgs: ['404', 'paid']);
+
+          checkdata();
+
+          return "200";
+        }
+      else
+        {
+          print(response.body);
+
+          return "422";
+        }
+
+    }
+    catch(e)
+    {
+      print(e);
+      return "422";
+    }
+
+  }
 
 }

@@ -217,12 +217,6 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'DATE: ',
-                              weight: 0,
-                              align: LineText.ALIGN_CENTER,
-                              linefeed: 1));
-                          list.add(LineText(
-                              type: LineText.TYPE_TEXT,
                               content: '--------------------------------',
                               weight: 1,
                               align: LineText.ALIGN_CENTER,
@@ -304,14 +298,14 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_QRCODE,
-                              content: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                              content: '',
                               size: 60,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1,
                               fontZoom: 2));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
-                              content: 'Scan me',
+                              content: '',
                               weight: 0,
                               align: LineText.ALIGN_CENTER,
                               linefeed: 1));

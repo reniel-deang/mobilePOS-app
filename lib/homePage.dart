@@ -18,7 +18,7 @@ import 'toiletbluetoothPrint.dart';
 import 'variable/receiptdata.dart';
 import 'variable/hostaddress.dart';
 
-const Color appColor = Colors.blueAccent; // Define the color you want to use
+const Color appColor = Colors.deepPurple; // Define the color you want to use
 
 class home extends StatelessWidget {
   @override
@@ -63,26 +63,42 @@ class _MainPageState extends State<MainPage> {
   final DatabaseService _databaseService = DatabaseService.instance;
 
 
+
   void initState() {
     // TODO: implement initState
 
 
     super.initState();
     _databaseService.fetchticketandconfiguration();
-    _databaseService.assigntoken();
-    fetchdata();
+    assigntoken();
+    _databaseService.checkdata();
 
 
     //_timer = Timer.periodic(Duration(seconds: 1), (Timer t) => fetchdata());
   }
 
+  Future <void> assigntoken() async
+  {
+    String status = await _databaseService.assigntoken();
+
+    if(status == "200")
+      {
+        fetchdata();
+      }
+    else if(status == "404")
+      {
+        await _databaseService.assigntoken();
+      }
+  }
+
   Future<void> fetchdata() async {
     try {
-      final apilink = hostaddress + "/api/fetch";
-      final response = await http.get(Uri.parse(apilink),
+      final apilink = await hostaddress + "/api/fetch";
+      final response = await http.get(Uri.parse(await apilink),
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
       });
 
       if (response.statusCode == 200) {
@@ -177,6 +193,33 @@ class _MainPageState extends State<MainPage> {
             ],
           ),
           actions: [
+            IconButton(
+              icon: Icon(Icons.upload, color: appColor,),
+              onPressed: () async{
+                String result = await _databaseService.uploaddata();
+
+                if (result == "200")
+                  {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Uploading data in database successfully uploaded to server"),
+                        duration: Duration(seconds: 3),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                else if (result == "404")
+                  {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("No data can be uploaded"),
+                        duration: Duration(seconds: 3),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+              },
+            ),
             IconButton(
               icon: Icon(Icons.refresh, color: appColor,),
               onPressed: _refreshPage,
@@ -459,9 +502,6 @@ class _TimeOutDialogState extends State<TimeOutDialog> {
         ElevatedButton(
           onPressed: () async {
 
-            setState(() {
-              messages = "";
-            });
             String plateNumber = widget.plateController.text;
 
             timeout_print = _currentTime;
@@ -470,6 +510,10 @@ class _TimeOutDialogState extends State<TimeOutDialog> {
             String? existing = await _databaseService.search_platenum(print_platenum);
 
             if (existing == "200") {
+
+              setState(() {
+                messages = "";
+              });
               print("PLATE NUMBER FOUND ON DATABASE");
 
               DateTime timeIn = DateFormat("yyyy-MM-dd HH:mm:ss").parse(fetchedtimein_print);
@@ -714,17 +758,6 @@ class MainDrawer extends StatelessWidget {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => MainPage()));
             },
-          ),
-          ListTile(
-            leading: const Icon(
-              FontAwesomeIcons.gear,
-              color: appColor,
-              size: 20,
-            ),
-            title: const Text("Settings"),
-            onTap: (){
-
-            }, // Assuming a SettingsScreen exists
           ),
           ListTile(
             leading: const Icon(
