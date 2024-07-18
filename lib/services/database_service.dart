@@ -549,7 +549,13 @@ class DatabaseService {
       whereArgs: ['404', 'paid'],
     );
 
-    if (upload.isEmpty) {
+    List<Map<String, dynamic>> upload1 = await db.query(
+      _toiletreceipttable,
+      where: '$_toiletapistatus = ?',
+      whereArgs: ['404'],
+    );
+
+    if (upload.isEmpty && upload1.isEmpty) {
       print('No data to upload');
       return "404";
     }
@@ -571,7 +577,16 @@ class DatabaseService {
       });
     });
 
+    List<Map<String, dynamic>> uploads1 = [];
+    upload1.forEach((row) {
+      uploads1.add({
+        'price': row[_toiletreceiptprice],
+        'time': row[_toiletreceipttime],
+      });
+    });
+
     print(uploads);
+    print(uploads1);
 
     /*
     uploads.forEach((row) {
@@ -595,6 +610,7 @@ class DatabaseService {
 
       if(response.statusCode == 200)
         {
+
           Map<String, dynamic> values = {
             _ticketapistatus: '200',
           };
@@ -603,9 +619,41 @@ class DatabaseService {
               where: '$_ticketapistatus = ? AND $_issuedticketsstatus = ?',
               whereArgs: ['404', 'paid']);
 
-          checkdata();
+          final apilink1 = hostaddress + "/api/uploadtoilet";
 
-          return "200";
+          // Send the POST request
+          final response1 = await http.post(
+            Uri.parse(apilink1),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(uploads1),
+          );
+
+          if(response1.statusCode == 200)
+            {
+
+
+              Map<String, dynamic> values1 = {
+                _toiletapistatus: '200',
+              };
+
+
+
+              await db.update(_toiletreceipttable, values1,
+                  where: '$_toiletapistatus = ?',
+                  whereArgs: ['404']);
+
+              checkdata();
+
+              return "200";
+            }
+
+          else
+            {
+              print(response1.body);
+              return "201";
+            }
+
+
         }
       else
         {

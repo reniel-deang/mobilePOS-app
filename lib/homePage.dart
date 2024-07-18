@@ -218,6 +218,17 @@ class _MainPageState extends State<MainPage> {
                       ),
                     );
                   }
+
+                else if (result == "201")
+                {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Parking Tickets are uploaded but Toilet have problem"),
+                      duration: Duration(seconds: 3),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               },
             ),
             IconButton(
