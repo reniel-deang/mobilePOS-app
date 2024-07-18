@@ -372,49 +372,64 @@ class DatabaseService {
   {
     final db = await database;
 
-
-    int id = await db.insert(
-      _issuedticketstable,
-      {
-        _issuedticketsnumber: '',
-        _issuedticketsplatenumber: platenumber,
-        _issuedticketstimein: timein,
-        _issuedticketstimeout: '',
-        _issuedticketshours: '',
-        _issuedticketstotal: '',
-        _issuedticketsstatus: ticketstatus,
-        _ticketapistatus: '404'
-      },
-    );
-
-    if (id > 0) {
-      Map<String, dynamic> values = {
-        _issuedticketsnumber: '2024-000$id',
-      };
-
-      await db.update(_issuedticketstable, values,
-          where: '$_issuedticketsplatenumber = ? AND $_issuedticketsstatus = ?',
-          whereArgs: [platenumber, 'unpaid']);
-
-      final List<Map<String, dynamic>> updatedTable = await db.query(
+    final List<Map<String, dynamic>> checkdatabase = await db.query(
         _issuedticketstable,
         where: '$_issuedticketsplatenumber = ? AND $_issuedticketsstatus = ?',
         whereArgs: [platenumber, 'unpaid']
-      );
+    );
 
-      ticket_number = await updatedTable[0]['ticket_number'];
+    if(checkdatabase.isEmpty)
+      {
+        int id = await db.insert(
+          _issuedticketstable,
+          {
+            _issuedticketsnumber: '',
+            _issuedticketsplatenumber: platenumber,
+            _issuedticketstimein: timein,
+            _issuedticketstimeout: '',
+            _issuedticketshours: '',
+            _issuedticketstotal: '',
+            _issuedticketsstatus: ticketstatus,
+            _ticketapistatus: '404'
+          },
+        );
 
-      updatedTable.forEach((row) {
-        print(row);
-      });
+        if (id > 0) {
+          Map<String, dynamic> values = {
+            _issuedticketsnumber: 'TKT-000$id',
+          };
 
-      print(updatedTable);
+          await db.update(_issuedticketstable, values,
+              where: '$_issuedticketsplatenumber = ? AND $_issuedticketsstatus = ?',
+              whereArgs: [platenumber, 'unpaid']);
 
-      return "200";
-    } else {
+          final List<Map<String, dynamic>> updatedTable = await db.query(
+              _issuedticketstable,
+              where: '$_issuedticketsplatenumber = ? AND $_issuedticketsstatus = ?',
+              whereArgs: [platenumber, 'unpaid']
+          );
 
-      return "404";
+          ticket_number = await updatedTable[0]['ticket_number'];
+
+          updatedTable.forEach((row) {
+            print(row);
+          });
+
+          print(updatedTable);
+
+          return "200";
+        } else {
+
+          return "404";
+        }
+      }
+
+    else{
+      print(400);
+      return "400";
     }
+
+
 
 
   }

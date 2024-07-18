@@ -329,6 +329,7 @@ class _TimeInDialogState extends State<TimeInDialog> {
   late String _currentTime;
 
   final DatabaseService _databaseService = DatabaseService.instance;
+  String message = "";
 
   @override
   void initState() {
@@ -384,11 +385,19 @@ class _TimeInDialogState extends State<TimeInDialog> {
       title: Text('Time In: $_currentTime', style: TextStyle(
           color: Colors.black54, fontSize: 20
       ),),
-      content: TextField(
-        controller: widget.plateController,
-        decoration: InputDecoration(
-          hintText: 'Enter Plate Number',
-          border: OutlineInputBorder(),
+      content: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextField(
+              controller: widget.plateController,
+              decoration: InputDecoration(
+                hintText: 'Enter Plate Number',
+                border: OutlineInputBorder(),
+              ),
+            ),
+        SizedBox(height: 3,),
+        Text(message, style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold))
+          ],
         ),
       ),
       actions: [
@@ -405,22 +414,41 @@ class _TimeInDialogState extends State<TimeInDialog> {
             print_platenum = plateNumber.toUpperCase();
             print(plateNumber);
             print(_currentTime);
-            String insert = await _databaseService.insert_issued_tickets(plateNumber.toUpperCase(), timein_print!);
 
-            if(insert == "200")
+
+            if(plateNumber == "" || plateNumber == " " || plateNumber.isEmpty)
               {
-                print("SUCESSFULLY INSERT TO DATABASE");
-                validate_platenum();
-                if(mounted)
+                setState(() {
+                  message = "Input cant be blank";
+                });
+              }
+            else
+              {
+                String insert = await _databaseService.insert_issued_tickets(plateNumber.toUpperCase(), timein_print!);
+                if(insert == "200")
+                {
+                  print("SUCESSFULLY INSERT TO DATABASE");
+                  validate_platenum();
+                  if(mounted)
                   {
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BluetoothPrintPage()));
                   }
 
+                }
+                else if(insert == "404")
+                {
+                  print("FAILED INSERT TO DATABASE");
+                }
+
+                else if(insert == "400")
+                  {
+                    setState(() {
+                      message = "Plate Number have pending unpaid ticket";
+                    });
+                  }
               }
-            else if(insert == "404")
-              {
-                print("FAILED INSERT TO DATABASE");
-              }
+
+
           },
           child: Text('Print', style: TextStyle(color: Colors.white)),
         ),
