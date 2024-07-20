@@ -250,6 +250,11 @@ class _BluetoothPrintPageState extends State<BluetoothPrintPage> {
                               linefeed: 1));
                           list.add(LineText(
                               type: LineText.TYPE_TEXT,
+                              content: 'RATE PER HOUR : $parking_rate',
+                              align: LineText.ALIGN_LEFT,
+                              linefeed: 1));
+                          list.add(LineText(
+                              type: LineText.TYPE_TEXT,
                               content: 'PRICE : $parking_price',
                               align: LineText.ALIGN_LEFT,
                               linefeed: 1));

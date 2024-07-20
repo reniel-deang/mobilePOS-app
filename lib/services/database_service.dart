@@ -560,9 +560,11 @@ class DatabaseService {
     // Query the database
     List<Map<String, dynamic>> upload = await db.query(
       _issuedticketstable,
-      where: '$_ticketapistatus = ? AND $_issuedticketsstatus = ?',
-      whereArgs: ['404', 'paid'],
+      where: '$_ticketapistatus = ? ',
+      whereArgs: ['404'],
     );
+
+    print(upload);
 
     List<Map<String, dynamic>> upload1 = await db.query(
       _toiletreceipttable,
