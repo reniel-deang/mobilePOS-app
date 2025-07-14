@@ -45,19 +45,26 @@
 - **MobilePOS Admin Panel** (Laravel Web) – Companion system for full control
 
 ---
-
 ## 📸 Screenshots
 
-- <img width="675" height="1200" alt="1" src="https://github.com/user-attachments/assets/f6329ef4-f41a-4a1b-aa4f-38b02d27dba3" />
-- <img width="675" height="1200" alt="7" src="https://github.com/user-attachments/assets/16eab184-156f-4dcf-bf51-1d82d6ea7484" />
-- <img width="675" height="1200" alt="2" src="https://github.com/user-attachments/assets/ac6499f3-ff95-4ae3-95c5-c97185509a6a" />
-- <img width="675" height="1200" alt="8" src="https://github.com/user-attachments/assets/f0e78b93-8b00-4b3f-9d7d-cce399a126de" />
-- <img width="675" height="1200" alt="9" src="https://github.com/user-attachments/assets/58836c00-f2ae-4058-a378-cf51d7d78294" />
-- <img width="675" height="1200" alt="6" src="https://github.com/user-attachments/assets/fe8aca17-a283-4b69-9b13-3034e4564ed1" />
+<div align="center">
 
+<table>
+  <tr>
+    <td><img width="180" height="300" alt="1" src="https://github.com/user-attachments/assets/f6329ef4-f41a-4a1b-aa4f-38b02d27dba3" /></td>
+    <td><img width="180" height="300" alt="7" src="https://github.com/user-attachments/assets/16eab184-156f-4dcf-bf51-1d82d6ea7484" /></td>
+  </tr>
+  <tr>
+    <td><img width="180" height="300" alt="2" src="https://github.com/user-attachments/assets/ac6499f3-ff95-4ae3-95c5-c97185509a6a" /></td>
+    <td><img width="180" height="300" alt="8" src="https://github.com/user-attachments/assets/f0e78b93-8b00-4b3f-9d7d-cce399a126de" /></td>
+  </tr>
+  <tr>
+    <td><img width="180" height="300" alt="5" src="https://github.com/user-attachments/assets/58836c00-f2ae-4058-a378-cf51d7d78294" /></td>
+    <td><img width="180" height="300" alt="6" src="https://github.com/user-attachments/assets/fe8aca17-a283-4b69-9b13-3034e4564ed1" /></td>
+  </tr>
+</table>
 
-
-
+</div>
 
 ---
 
