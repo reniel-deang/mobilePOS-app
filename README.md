@@ -63,6 +63,6 @@
 
 ## 🔓 Open Source and Copyright Notice
 
-MobilePOS – Mobile Ticketing for Parking & Toilet with Thermal Printing is an educational platform built for learning and community engagement. This project makes use of several open-source libraries and tools that are respected and acknowledged in their respective licenses. All third-party assets, code, and libraries used are credited to their original authors and are used under their corresponding open-source licenses.
+This project makes use of several open-source libraries and tools that are respected and acknowledged in their respective licenses. All third-party assets, code, and libraries used are credited to their original authors and are used under their corresponding open-source licenses.
 
 This project is intended for non-commercial, educational, and developmental use only. If you plan to reuse or distribute any part of this platform, please ensure compliance with the licenses of the included open-source components. We encourage learning, collaboration, and open innovation while respecting the intellectual property of contributors across the open-source community.
